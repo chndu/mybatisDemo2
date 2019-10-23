@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+使用动态代理开发
+    namespace 就需要指定接口地址
+-->
+
+<mapper namespace="com.corre.dao.UserMapper">
+<!--
+注意在没有使用动态代理开发前，
+id可以随便写
+使用动态代理id只必须为接口中对用方法名一致
+
+parameterType：参数类型必须与该接口参数类型相同
+resultType：返回值类型必须与该接口只的类型相同
+-->
+<!--
+resultMap:那么就是为了处理数据库字段与属性名称不一致
+type:实体类的类型
+id:resultMap的名称
+autoMapping="true":的默认映射，但是实体类属性与数据库表字段一致
+
+<resultMap type="user" id="user">
+    id标签:表示数据库的表的主键对应实体类属性名称
+    column:指向数据库字段名称
+    property:实体类属性名称
+    javaType: 表示类型（java的类型）
+    jdbcType:数据库表指端类型
+    typeHandler:默认类型处理器，这个属性是一个类型处理器，实现类完全限定名称
+    <id column="" property=""/>
+
+    result:表示除了主键意外表字段对应实体类属性名称
+    <result column="" property=""/>
+-->
+
+
+    <select id="findList" parameterType="java.lang.Integer" resultType="com.corre.domain.User">
+    select * from t_test where id = #{id}
+  </select>
+
+
+    <select id="findLists" parameterType="person" resultType="user">
+    select * from t_test where id = #{user.id}
+  </select>
+
+    <select id="getArray" resultType="user">
+        select * from  t_test where ${array[0]}=#{array[1]}
+    </select>
+    
+    
+    <!-- 集合传递 -->
+    <select id="getList" resultType="user">
+        select * from t_test where id=#{list[0]}
+    </select>
+
+    <!-- Map传递 -->
+    <select id="getMap" resultType="user">
+      select name from t_test where ${nameValues} = #{namekey}
+    </select>
+
+
+    <insert id="addUser" parameterType="user">
+    <selectKey keyProperty="id" resultType="Integer" order="AFTER">
+        select LAST_INSERT_ID()
+    </selectKey>
+        insert into t_test(name,password,sex,city,create_time,update_time)
+        values (#{name},#{password},#{sex},#{city},now(),now())
+    </insert>
+
+
+    <update id="updateUser" parameterType="user">
+        update t_test set name=#{name},update_time=now() where id=#{id}
+    </update>
+</mapper>
